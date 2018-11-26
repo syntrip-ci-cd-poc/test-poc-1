@@ -16,7 +16,7 @@ labels:
   component: ci
 spec:
   # Use service account that can deploy to all namespaces
-  serviceAccountName: jenkins
+  serviceAccountName: jenkins-1
   containers:
   - name: gcloud
     image: gcr.io/cloud-builders/gcloud
