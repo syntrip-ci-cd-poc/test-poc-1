@@ -16,26 +16,45 @@ labels:
   component: ci
 spec:
   # Use service account that can deploy to all namespaces
-  serviceAccountName: jenkins
+  serviceAccountName: cd-jenkins
   containers:
   - name: gcloud
     image: gcr.io/cloud-builders/gcloud
     command:
     - cat
-    tty: true    
+    tty: true
   - name: kubectl
     image: gcr.io/cloud-builders/kubectl
     command:
     - cat
     tty: true
 """
-    }
+}
   }
-  stage('Build image with Docker') {
-    steps {
-      container('jnlp') {
-        sh "docker build -t ${imageTag} . "
+  stages {
+
+    stage('Build image') {
+      steps {
+        container('jnlp') {
+          sh "docker build -t ${imageTag} ."
+        }
       }
     }
+
+    stage('Upload image to registry') {
+      steps {
+        container('gcloud') {
+          sh "gcloud docker -- push ${imageTag}"
+        }
+      }
+    }
+
+    stage('Test') {
+      steps {
+
+        }
+      }
+    }
+
   }
 }
