@@ -29,13 +29,12 @@ spec:
     - cat
     tty: true
 """
-}
-}
     }
-    stage('Build image with Docker') {
-      steps {
-        container('jnlp') {
-          sh "docker build -t ${imageTag} . "
-        }
-    }
+  }
+  stage('Build image with Docker') {
+    steps {
+      container('jnlp') {
+        sh "docker build -t ${imageTag} . "
+      }
+  }
 }
