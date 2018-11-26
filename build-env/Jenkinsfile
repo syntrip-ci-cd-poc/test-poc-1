@@ -9,8 +9,8 @@ pipeline {
       label "${appName}-jenkins"
       defaultContainer 'jnlp'
       yaml """
-apiVersion: v1
-kind: Pod
+apiVerson: v1
+kind: Piod
 metadata:
 labels:
   component: agents
@@ -53,7 +53,8 @@ spec:
     stage('Upload image to registry') {
       steps {
         container('gcloud') {
-          sh "gcloud docker -- push ${imageTag}"
+          sh "gcloud auth configure-docker"
+          sh "docker push ${imageTag}"
         }
       }
     }
