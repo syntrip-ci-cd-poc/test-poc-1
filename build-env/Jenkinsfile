@@ -54,6 +54,7 @@ spec:
       steps {
         container('gcloud') {
           sh "gcloud auth configure-docker"
+          sh "Y"
           sh "docker push ${imageTag}"
         }
       }
