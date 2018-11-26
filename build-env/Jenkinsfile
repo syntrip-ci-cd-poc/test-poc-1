@@ -8,7 +8,27 @@ pipeline {
     kubernetes {
       label "${appName}-jenkins"
       defaultContainer 'jnlp'
-    }
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+labels:
+  component: ci
+spec:
+  # Use service account that can deploy to all namespaces
+  containers:
+  - name: gcloud
+    image: gcr.io/cloud-builders/gcloud
+    command:
+    - cat
+    tty: true
+  - name: kubectl
+    image: gcr.io/cloud-builders/kubectl
+    command:
+    - cat
+    tty: true
+"""
+}
   }
   stages {
 
@@ -30,7 +50,7 @@ pipeline {
 
     stage('Test') {
       steps {
-        container('jlnp') {
+        container('gcloud') {
           echo "testing ${imageTag}"
         }
       }
