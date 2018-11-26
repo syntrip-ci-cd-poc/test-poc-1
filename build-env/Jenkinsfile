@@ -14,7 +14,7 @@ pipeline {
 
     stage('Build image') {
       steps {
-        container('jnlp') {
+        container('gcloud') {
           sh "docker build -t ${imageTag} ."
         }
       }
