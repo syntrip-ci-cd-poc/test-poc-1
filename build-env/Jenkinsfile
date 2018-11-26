@@ -36,5 +36,6 @@ spec:
       container('jnlp') {
         sh "docker build -t ${imageTag} . "
       }
+    }
   }
 }
