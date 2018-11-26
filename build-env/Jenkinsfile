@@ -10,7 +10,7 @@ pipeline {
       defaultContainer 'jnlp'
       yaml """
 apiVerson: v1
-kind: Piod
+kind: Pod
 metadata:
 labels:
   component: agents
