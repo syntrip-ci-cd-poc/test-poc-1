@@ -18,7 +18,7 @@ spec:
   # Use service account that can deploy to all namespaces
   containers:
   - name: gcloud
-    image: gcr.io/cloud-builders/gcloud
+    image: google/cloud-sdk
     command:
     - cat
     tty: true
@@ -53,9 +53,8 @@ spec:
     stage('Upload image to registry') {
       steps {
         container('gcloud') {
-          sh "gcloud auth configure-docker"
-          sh "Y"
-          sh "docker push ${imageTag}"
+          sh "gcloud docker --authorize-only"
+          sh "docker -- push  ${imageTag}"
         }
       }
     }
