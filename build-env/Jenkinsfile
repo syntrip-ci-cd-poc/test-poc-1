@@ -49,7 +49,7 @@ spec:
       steps {
         container('gcloud') {
           sh "gcloud docker --authorize-only"
-          sh "docker \push  ${imageTag}"
+          sh "docker push  ${imageTag}"
         }
       }
     }
