@@ -104,34 +104,34 @@ spec:
             echo "Set database connection ENV variables in PHP container"
           }
         }
-      stage("Update Containers") {
-        steps {
-          container('gcloud') {
-            sh "kubectl set image deployments/php-poc-deployment php-poc=${imageTag} -n ${nameSpace}"
-            slackSend "Updated K8S - ${imageTag}"
-          }
-        }
-      }
-      stage("Post Application") {
-        stages {
-          stage("Drush commands") {
-            steps {
-              echo "EXECUTING: Drush updb/cr/etc..."
-            }
-          }
-          stage("Yarn/NPM/Gulp commands") {
-            steps {
-              echo "EXECUTING: Yarn/NPM/Gulp commands"
+        stage("Update Containers") {
+          steps {
+            container('gcloud') {
+              sh "kubectl set image deployments/php-poc-deployment php-poc=${imageTag} -n ${nameSpace}"
+              slackSend "Updated K8S - ${imageTag}"
             }
           }
         }
-      }
-      stage("Update DNS & SSL") {
-        steps {
-          echo "EXECUTING: Update DNS & SSL"
+        stage("Post Application") {
+          stages {
+            stage("Drush commands") {
+              steps {
+                echo "EXECUTING: Drush updb/cr/etc..."
+              }
+            }
+            stage("Yarn/NPM/Gulp commands") {
+              steps {
+                echo "EXECUTING: Yarn/NPM/Gulp commands"
+              }
+            }
+          }
+        }
+        stage("Update DNS & SSL") {
+          steps {
+            echo "EXECUTING: Update DNS & SSL"
+          }
         }
       }
     }
   }
 }
-
