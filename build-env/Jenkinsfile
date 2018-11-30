@@ -49,8 +49,7 @@ spec:
     stage('Upload image to registry') {
       steps {
         container('gcloud') {
-          sh "gcloud docker --authorize-only"
-          sh "docker push  ${imageTag}"
+          sh "gcloud docker -- push ${imageTag}"
         }
       }
     }
