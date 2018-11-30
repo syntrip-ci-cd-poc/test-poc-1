@@ -47,13 +47,12 @@ spec:
     }
 
     stage('Upload image to registry') {
-      environment {
-          GCR_CREDS = credentials('synetic-k8s-poc')
-      }      
       steps {
-        container('gcloud') {
-          sh "docker login -u ${GCR_CREDS} --password-stdin https://eu.gcr.io"
-          sh "docker push ${imageTag}"
+        withCredentials([file(credentialsId: 'synetic-k8s-poc', variable: 'GCR_CREDS')]) {     
+          container('gcloud') {
+            sh "docker login -u ${GCR_CREDS} --password-stdin https://eu.gcr.io"
+            sh "docker push ${imageTag}"
+          }
         }
       }
     }
