@@ -38,6 +38,7 @@ spec:
       steps {
         container('gcloud') {
           sh "docker build -t ${imageTag} ."
+          slackSend "Build started - ${imageTag}"
         }
       }
     }
@@ -48,6 +49,7 @@ spec:
           container('gcloud') {
             sh "cat ${GCR_CREDS} | docker login -u _json_key --password-stdin https://eu.gcr.io"
             sh "docker push ${imageTag}"
+            slackSend "Uploaded to GCR - ${imageTag}"
           }
         }
       }
@@ -64,7 +66,8 @@ spec:
     stage('Update Kubernetes') {
       steps {
         container('gcloud') {
-          sh "kubectl set image deployments/php-poc-deployment php-poc=${imageTag} -n ${nameSpace}" 
+          sh "kubectl set image deployments/php-poc-deployment php-poc=${imageTag} -n ${nameSpace}"
+          slackSend "Updated K8S - ${imageTag}"
         }
       }
     }    
