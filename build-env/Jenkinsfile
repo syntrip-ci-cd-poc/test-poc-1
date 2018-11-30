@@ -24,9 +24,11 @@ spec:
   - name: gcloud
     image: google/cloud-sdk
     volumeMounts:
-      - name: docker-socket
-        readOnly: false
-        mountPath: /var/run/docker.sock
+      - mountPath: /var/run/docker.sock
+        name: docker-socket
+    command:
+    - cat
+    tty: true
   volumes:
     - name: docker-socket
       hostPath:
