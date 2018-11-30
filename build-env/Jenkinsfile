@@ -65,5 +65,13 @@ spec:
       }
     }
 
+    stage('Update Kubernetes') {
+      steps {
+        container('gcloud') {
+          echo "kubectl set image deployments/php-poc-deployment php-poc=${imageTag}"
+        }
+      }
+    }    
+
   }
 }

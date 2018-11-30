@@ -1,31 +1,45 @@
 # Service
-kind: Service
 apiVersion: v1
+kind: Service
+
 metadata:
   name: php-poc-service
+  labels:
+    app: php-poc  
+
 spec:
-  type: LoadBalancer
+  type: NodePort
+
   selector:
     app: php-poc
+
   ports:
     - port: 80
+
 ---
 # Ingress
 apiVersion: extensions/v1beta1
 kind: Ingress
+
 metadata:
   name: php-poc-ingress
-backend:
-  serviceName: php-poc-service
-  servicePort: 80
+  labels:
+    app: php-poc  
+
+spec:
+  backend:
+    serviceName: php-poc-service
+    servicePort: 80
 ---
 # Deployment
 apiVersion: extensions/v1beta1
 kind: Deployment
+
 metadata:
   name: php-poc-deployment
   labels:
     app: php-poc
+
 spec:
   replicas: 1
   template:
@@ -34,7 +48,7 @@ spec:
         app: php-poc
     spec:
       containers:
-      - image: gcr.io/synetic-k8s-poc/php-poc:1
+      - image: eu.gcr.io/synetic-k8s-poc/php-poc:46
         name: php-poc
         ports:
         - containerPort: 80
