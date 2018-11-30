@@ -50,7 +50,7 @@ spec:
       steps {
         withCredentials([file(credentialsId: 'gcr_jenkins', variable: 'GCR_CREDS')]) {     
           container('gcloud') {
-            sh "echo ${GCR_CREDS} | docker login -u _json_key --password-stdin https://eu.gcr.io"
+            sh "cat ${GCR_CREDS} | docker login -u _json_key --password-stdin https://eu.gcr.io"
             sh "docker push ${imageTag}"
           }
         }
