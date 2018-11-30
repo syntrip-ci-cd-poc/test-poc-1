@@ -25,9 +25,6 @@ spec:
   - name: gcloud
     image: google/cloud-sdk
     stage: imagecreation
-    script:
-      - docker build -t gcr.io/project-test-to/counter .
-      - gcloud docker -- push gcr.io/project-test-to/counter
     volume:
       - "/var/run/docker.sock:/var/run/docker.sock"     
 """
