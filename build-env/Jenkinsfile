@@ -51,7 +51,7 @@ spec:
           GCR_CREDS = credentials('syntrip-ci-cd-poc')
       }      
       steps {
-        container('gcloud') {.
+        container('gcloud') {
           sh "docker login -u ${GCR_CREDS} --password-stdin https://eu.gcr.io"
           sh "docker push ${imageTag}"
         }
