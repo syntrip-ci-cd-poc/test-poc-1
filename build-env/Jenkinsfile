@@ -24,6 +24,9 @@ spec:
     tty: true
   - name: gcloud
     image: google/cloud-sdk
+    command:
+    - cat
+    tty: true    
     securityContext:
       privileged: true
     volumeMounts:
