@@ -1,7 +1,7 @@
 def project = 'synetic-k8s-poc'
 def appName = 'php-poc'
 def feSvcName = "${appName}"
-def imageTag = "gcr.io/${project}/${appName}:${env.BUILD_NUMBER}"
+def imageTag = "eu.gcr.io/${project}/${appName}:${env.BUILD_NUMBER}"
 
 pipeline {
   agent {
@@ -47,8 +47,12 @@ spec:
     }
 
     stage('Upload image to registry') {
+      environment {
+          GCR_CREDS = credentials('syntrip-ci-cd-poc')
+      }      
       steps {
-        container('gcloud') {
+        container('gcloud') {.
+          sh "docker login -u ${GCR_CREDS} --password-stdin https://eu.gcr.io"
           sh "gcloud docker -- push ${imageTag}"
         }
       }
