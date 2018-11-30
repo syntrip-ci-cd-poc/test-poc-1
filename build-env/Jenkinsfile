@@ -1,6 +1,7 @@
 def project = 'synetic-k8s-poc'
 def appName = 'php-poc'
-def feSvcName = "${appName}"
+def environment = "prod"
+def feSvcName = "${environment}-${appName}"
 def imageTag = "eu.gcr.io/${project}/${appName}:${env.BUILD_NUMBER}"
 def nameSpace = "synetic"
 
@@ -33,44 +34,104 @@ spec:
     }
   }
   stages {
+    stage("Build") {
+      stages {
 
-    stage('Build image') {
-      steps {
-        container('gcloud') {
-          sh "docker build -t ${imageTag} ."
-          slackSend "Build started - ${imageTag}"
+        stage("Build Images") {
+          steps {
+            slackSend "${env.BUILD_NUMBER}: EXECUTING: Build Images - ${project} - ${feSvcName}"
+          }
         }
-      }
-    }
 
-    stage('Upload image to registry') {
-      steps {
-        withCredentials([file(credentialsId: 'gcr_jenkins', variable: 'GCR_CREDS')]) {     
-          container('gcloud') {
-            sh "cat ${GCR_CREDS} | docker login -u _json_key --password-stdin https://eu.gcr.io"
-            sh "docker push ${imageTag}"
-            slackSend "Uploaded to GCR - ${imageTag}"
+        stage("Push Images to Registry") {
+          steps {
+            withCredentials([file(credentialsId: 'gcr_jenkins', variable: 'GCR_CREDS')]) {     
+              container('gcloud') {
+                sh "cat ${GCR_CREDS} | docker login -u _json_key --password-stdin https://eu.gcr.io"
+                sh "docker push ${imageTag}"
+                slackSend "${env.BUILD_NUMBER}: EXECUTING: Upload Images - ${project} - ${feSvcName}"
+              }
+            }
+          }
+        }
+
+        stage("Git Commit & Push Build to Environment Repo") {
+          steps {
+            echo "EXECUTING: Git Environment Checkout"
+            echo 'git clone git@environment-repo.org/project/repo.git'
+            echo 'git checkout master'
+            echo 'git branch preview/{SOME-PR} --set-upstream-to=origin/preview/{SOME-PR}'
+            echo "EXECUTING: Git Commit & Push Build to Environment Repo"
+            echo 'git commit -am "Commit build nr {#NR} to repository"'
+            echo "git push"            
+            slackSend "${env.BUILD_NUMBER}: EXECUTING: Git Commit & Push Build to Environment Repo - ${project} - ${feSvcName}"
           }
         }
       }
     }
 
-    stage('Test') {
-      steps {
-        container('gcloud') {
-          echo "testing ${imageTag}"
+    stage("Test") {
+      parallel {
+        stage("PHP Unit") {
+          steps {
+            echo "EXECUTING: PHP Unit"
+            echo "- start application container"
+            echo "- run sh 'composer install --dev' on php container"
+            echo "- run cli command to start php unit"            
+            echo "${env.BUILD_NUMBER}: EXECUTING: PHP Unit - ${project} - ${feSvcName}"
+          }
+        }
+
+        stage("Codeception") {
+          steps {
+            echo "EXECUTING: Codeception"
+            echo '- start all containers and a copy of Prod DB for codeception'
+            echo "- run sh 'composer install --dev' on php container"
+            echo '- start selenium webdriver container'
+            echo '- run cli command to start codeception with correct selenium webdriver container hostname'            
+            echo "${env.BUILD_NUMBER}: EXECUTING: Codeception - ${project} - ${feSvcName}"
+          }
         }
       }
     }
-
-    stage('Update Kubernetes') {
-      steps {
-        container('gcloud') {
-          sh "kubectl set image deployments/php-poc-deployment php-poc=${imageTag} -n ${nameSpace}"
-          slackSend "Updated K8S - ${imageTag}"
+    
+    stage("Deploy") {
+      stages {
+        stage("DB Import/Clone/Backup") {
+          steps {
+            echo "EXECUTING: DB Import/Clone/Backup"
+            echo "gcloud sql instances clone SOURCE DESTINATION [--async]"
+            echo "Set database connection ENV variables in PHP container"
+          }
+        }
+      stage("Update Containers") {
+        steps {
+          container('gcloud') {
+            sh "kubectl set image deployments/php-poc-deployment php-poc=${imageTag} -n ${nameSpace}"
+            slackSend "Updated K8S - ${imageTag}"
+          }
         }
       }
-    }    
-
+      stage("Post Application") {
+        stages {
+          stage("Drush commands") {
+            steps {
+              echo "EXECUTING: Drush updb/cr/etc..."
+            }
+          }
+          stage("Yarn/NPM/Gulp commands") {
+            steps {
+              echo "EXECUTING: Yarn/NPM/Gulp commands"
+            }
+          }
+        }
+      }
+      stage("Update DNS & SSL") {
+        steps {
+          echo "EXECUTING: Update DNS & SSL"
+        }
+      }
+    }
   }
 }
+
