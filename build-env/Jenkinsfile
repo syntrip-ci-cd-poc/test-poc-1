@@ -53,7 +53,7 @@ spec:
       steps {
         container('gcloud') {.
           sh "docker login -u ${GCR_CREDS} --password-stdin https://eu.gcr.io"
-          sh "gcloud docker -- push ${imageTag}"
+          sh "docker push ${imageTag}"
         }
       }
     }
