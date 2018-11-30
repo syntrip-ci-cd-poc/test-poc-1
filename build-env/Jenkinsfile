@@ -17,11 +17,6 @@ metadata:
     component: agents
 spec:
   containers:
-  - name: kubectl
-    image: gcr.io/cloud-builders/kubectl
-    command:
-    - cat
-    tty: true
   - name: gcloud
     image: google/cloud-sdk
     volumeMounts:
