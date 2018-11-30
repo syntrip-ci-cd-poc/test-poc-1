@@ -48,7 +48,7 @@ spec:
 
     stage('Upload image to registry') {
       environment {
-          GCR_CREDS = credentials('syntrip-ci-cd-poc')
+          GCR_CREDS = credentials('synetic-k8s-poc')
       }      
       steps {
         container('gcloud') {
