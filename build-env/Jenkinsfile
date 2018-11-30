@@ -2,6 +2,7 @@ def project = 'synetic-k8s-poc'
 def appName = 'php-poc'
 def feSvcName = "${appName}"
 def imageTag = "eu.gcr.io/${project}/${appName}:${env.BUILD_NUMBER}"
+def nameSpace = "synetic"
 
 pipeline {
   agent {
@@ -68,7 +69,7 @@ spec:
     stage('Update Kubernetes') {
       steps {
         container('gcloud') {
-          echo "kubectl set image deployments/php-poc-deployment php-poc=${imageTag}"
+          echo "kubectl set image deployments/php-poc-deployment php-poc=${imageTag} -n ${nameSpace}" 
         }
       }
     }    
