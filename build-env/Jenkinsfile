@@ -36,10 +36,12 @@ spec:
   stages {
     stage("Build") {
       stages {
-
         stage("Build Images") {
           steps {
-            slackSend "${env.BUILD_NUMBER}: EXECUTING: Build Images - ${project} - ${feSvcName}"
+            container('gcloud') {
+              sh "docker build -t ${imageTag} ."
+              slackSend "${env.BUILD_NUMBER}: EXECUTING: Build Images - ${project} - ${feSvcName}"
+            }            
           }
         }
 
